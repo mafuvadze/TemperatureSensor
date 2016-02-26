@@ -4,20 +4,228 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.mafuvadze.carsensor.MainActivity"
-    tools:showIn="@layout/activity_main"
-    android:orientation="vertical">
+    tools:showIn="@layout/activity_main">
 
-    <com.mafuvadze.carsensor.SlidingTabLayout
-        android:id="@+id/tab_host"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
-    <android.support.v4.view.ViewPager
-        android:id="@+id/pager"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_weight="5">
+
+        <TextView
+            android:id="@+id/temp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="79°"
+            android:textColor="@color/DodgerBlue"
+            android:textSize="90sp" />
+
+        <TextView
+            android:id="@+id/units"
+            android:layout_toRightOf="@id/temp"
+            android:layout_alignBaseline="@id/temp"
+            android:textColor="@color/DodgerBlue"
+            android:text="F"
+            android:textSize="29sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/temp"
+            android:layout_centerHorizontal="true"
+            android:text="device name/IP address"
+            android:textSize="26sp"
+            android:textStyle="bold" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="15dp"
+        android:layout_weight="8">
+
+        <RelativeLayout
+            android:id="@+id/battery"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginBottom="5dp">
+
+            <ImageView
+                android:id="@+id/icon_battery"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:src="@mipmap/ic_battery_full_black_24dp" />
+
+            <TextView
+                android:id="@+id/bat_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/icon_battery"
+                android:text="Battery"
+                android:textColor="@color/green"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/battery_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:text="69%"
+                android:textColor="@color/Green"
+                android:textSize="22sp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/upper_limit"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_below="@+id/battery"
+            android:layout_marginBottom="5dp">
+
+            <ImageView
+                android:id="@+id/icon_upper_limit"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:src="@mipmap/ic_keyboard_arrow_up_black_24dp" />
+
+            <TextView
+                android:id="@+id/ulimit_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/icon_upper_limit"
+                android:text="Upper Limit"
+                android:textColor="@color/Orange"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/ulimit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:text="85°"
+                android:textColor="@color/Orange"
+                android:textSize="22sp" />
+
+            <SeekBar
+                android:id="@+id/ulimit_seek"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_toLeftOf="@id/ulimit"
+                android:layout_toRightOf="@id/ulimit_txt" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/lower_limit"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_below="@+id/upper_limit"
+            android:layout_marginBottom="5dp">
+
+            <ImageView
+                android:id="@+id/icon_lower_limit"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:src="@mipmap/ic_keyboard_arrow_down_black_24dp" />
+
+            <TextView
+                android:id="@+id/llimit_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/icon_lower_limit"
+                android:text="Lower Limit "
+                android:textColor="@color/DodgerBlue"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/llimit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:text="25°"
+                android:textColor="@color/DodgerBlue"
+                android:textSize="22sp" />
+
+            <SeekBar
+                android:id="@+id/llimit_seek"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_toLeftOf="@id/llimit"
+                android:layout_toRightOf="@id/llimit_txt" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/call_police"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_below="@+id/lower_limit"
+            android:layout_marginBottom="5dp">
+
+            <ImageView
+                android:id="@+id/icon_phone"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:src="@mipmap/ic_local_phone_black_24dp" />
+
+            <TextView
+                android:id="@+id/police_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/icon_phone"
+                android:text="Call Police"
+                android:textSize="18sp" />
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="5dp"
+                android:layout_toRightOf="@id/police_txt"
+                android:src="@mipmap/ic_info" />
+
+            <CheckBox
+                android:id="@+id/call_police_CB"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true" />
+
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+
 
 </LinearLayout>

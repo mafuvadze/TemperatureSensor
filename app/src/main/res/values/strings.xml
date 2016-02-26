@@ -1,7 +1,8 @@
 <resources>
-    <string name="app_name">CarSensor</string>
+    <string name="app_name">BabySaver</string>
     <string name="action_settings">Settings</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="call_police_info">Once the temperature gets outside of the acceptable range the user will recieve an alert. If the user does not respond the alert within 5 minutes the police will be called</string>
 </resources>
