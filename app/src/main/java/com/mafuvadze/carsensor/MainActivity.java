@@ -20,6 +20,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ListView;
@@ -32,7 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, SeekBar.OnSeekBarChangeListener
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, SeekBar.OnSeekBarChangeListener, AdapterView.OnItemClickListener
 {
     Typeface roboto_thin, roboto_bold, roboto_italic;
     TextView temp, name, battery, ulimit, llimit;
@@ -42,6 +43,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     SeekBar llimitSeek, ulimitSeek;
     BluetoothAdapter btAdapter;
     Set<BluetoothDevice> pairedDevices;
+    BluetoothDevice selectedDevice;
+    List<BluetoothDevice> listDevices;
+    Dialog dialog;
     public static final int BT_REQUEST = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -161,11 +165,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void initBT()
     {
         btAdapter = BluetoothAdapter.getDefaultAdapter();
-        if(isBTConnected(btAdapter) && pairedDevices != null)
-        {
-            showDevices();
-        }
-        else
+        if(!btAdapter.isEnabled())
         {
             showToast("no bluetooth devices found", Toast.LENGTH_LONG);
         }
@@ -173,13 +173,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void showDevices()
     {
-        Dialog dialog = new Dialog(this);
+        dialog = new Dialog(this);
         dialog.setTitle("Bluetooth devices nearby");
         dialog.setContentView(R.layout.paired_devices);
 
         ListView devices = (ListView) dialog.findViewById(R.id.devices);
-        devices.setAdapter(new PairListAdapter(this, R.layout.single_bt_row, pairedDevices));
+
+        List<BluetoothDevice> pDevices = new ArrayList<>();
+        for(BluetoothDevice device : pairedDevices)
+        {
+            pDevices.add(device);
+        }
+        listDevices = pDevices;
+        devices.setAdapter(new PairListAdapter(this, R.layout.single_bt_row, listDevices));
         dialog.show();
+        devices.setOnItemClickListener(this);
     }
 
     private boolean isBTConnected(BluetoothAdapter btAdapter)
@@ -237,28 +245,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         if(id == R.id.BTdevices)
         {
-            if(isBTConnected(btAdapter))
+            if(btAdapter.isEnabled() && isBTConnected(btAdapter))
             {
                 showDevices();
+            }
+            else
+            {
+                showToast("Bluetooth is not enabled", Toast.LENGTH_LONG);
             }
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        selectedDevice = listDevices.get(position);
+        name.setText(selectedDevice.getName());
+        dialog.dismiss();
+    }
+
     class PairListAdapter extends ArrayAdapter
     {
         List<BluetoothDevice> devices;
         int resource;
-        public PairListAdapter(Context context, int resource, Set<BluetoothDevice> devices) {
+        public PairListAdapter(Context context, int resource, List<BluetoothDevice> devices) {
             super(context, resource);
             this.resource = resource;
-
-            this.devices = new ArrayList<>();
-            for(BluetoothDevice device : devices)
-            {
-                this.devices.add(device);
-            }
+            this.devices = devices;
         }
 
         @Override
@@ -286,3 +300,47 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 }
+
+/**
+ *
+ * public void run()
+ {
+ try
+ {
+ mBluetoothSocket = mBluetoothDevice.createRfcommSocketToServiceRecord(applicationUUID);
+ mBluetoothAdapter.cancelDiscovery();
+ mBluetoothSocket.connect();
+ mHandler.sendEmptyMessage(0);
+ }
+ catch (IOException eConnectException)
+ {
+ Log.d(TAG, "CouldNotConnectToSocket", eConnectException);
+ closeSocket(mBluetoothSocket);
+ return;
+ }
+ }
+
+ private void closeSocket(BluetoothSocket nOpenSocket)
+ {
+ try
+ {
+ nOpenSocket.close();
+ Log.d(TAG, "SocketClosed");
+ }
+ catch (IOException ex)
+ {
+ Log.d(TAG, "CouldNotCloseSocket");
+ }
+ }
+
+ private Handler mHandler = new Handler()
+ {
+ @Override
+ public void handleMessage(Message msg)
+ {
+ mBluetoothConnectProgressDialog.dismiss();
+ Toast.makeText(Main.this, "DeviceConnected", 5000).show();
+ }
+ };
+ }
+ */
