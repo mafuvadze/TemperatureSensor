@@ -5,16 +5,19 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,9 +32,14 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, SeekBar.OnSeekBarChangeListener, AdapterView.OnItemClickListener
 {
@@ -46,7 +54,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     BluetoothDevice selectedDevice;
     List<BluetoothDevice> listDevices;
     Dialog dialog;
+    BluetoothSocket bluetoothSocket;
     public static final int BT_REQUEST = 1;
+    private UUID applicationUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -167,14 +178,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btAdapter = BluetoothAdapter.getDefaultAdapter();
         if(!btAdapter.isEnabled())
         {
-            showToast("no bluetooth devices found", Toast.LENGTH_LONG);
+            showToast("Bluetooth is not enabled", Toast.LENGTH_LONG);
         }
     }
 
     private void showDevices()
     {
         dialog = new Dialog(this);
-        dialog.setTitle("Bluetooth devices nearby");
+        dialog.setTitle("paired Bluetooth devices");
         dialog.setContentView(R.layout.paired_devices);
 
         ListView devices = (ListView) dialog.findViewById(R.id.devices);
@@ -296,6 +307,61 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             ip.setText(device.getAddress());
 
             return convertView;
+        }
+    }
+
+    class Connection extends AsyncTask
+    {
+        DataInputStream inputStream;
+        @Override
+        protected Object doInBackground(Object[] params) {
+            BluetoothSocket bluetoothSocket = null;
+            try
+            {
+                bluetoothSocket = selectedDevice.createRfcommSocketToServiceRecord(applicationUUID);
+            } catch (IOException e)
+            {
+                Log.d("CONNECTTHREAD", "Could not create RFCOMM socket:" + e.toString());
+                return null;
+            }
+            try
+            {
+                bluetoothSocket.connect();
+
+            } catch(IOException e)
+            {
+                Log.d("CONNECTTHREAD","Could not connect: " + e.toString());
+                try
+                {
+                    bluetoothSocket.close();
+                } catch(IOException close)
+                {
+                    Log.d("CONNECTTHREAD", "Could not close connection:" + e.toString());
+                    return null;
+                }
+            }
+
+            try
+            {
+                InputStream inputStream = bluetoothSocket.getInputStream();
+                this.inputStream = new DataInputStream(inputStream);
+            } catch (IOException e)
+            {
+                Log.e("CONNECTTHREAD", "temp sockets not created", e);
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Object o) {
+            if(inputStream != null)
+            {
+                while(true)
+                {
+
+                }
+            }
         }
     }
 
